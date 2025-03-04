@@ -34,13 +34,27 @@ const createWindow = () => {
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
 
-
 }
 
 
 
 // Configurer les gestionnaires IPC
 function setupIpcHandlers() {
+
+
+  ipcMain.handle('extract-pdf-text', async (_, arrayBuffer) => {
+    
+    try {
+      const pdfParse = require('pdf-parse');
+      const data = await pdfParse(Buffer.from(arrayBuffer));
+     
+      return data.text;
+    } catch {
+      
+      return null;
+    }
+  });
+  
   // Charger les snippets
   ipcMain.handle('load-snippets', () => {
     try {
@@ -50,8 +64,8 @@ function setupIpcHandlers() {
       }
       const data = fs.readFileSync(SNIPPETS_FILE, 'utf8');
       return JSON.parse(data);
-    } catch (error) {
-      console.error('Error loading snippets:', error);
+    } catch {
+     
       return [];
     }
   });
@@ -61,8 +75,8 @@ function setupIpcHandlers() {
     try {
       fs.writeFileSync(SNIPPETS_FILE, JSON.stringify(snippets, null, 2));
       return true;
-    } catch (error) {
-      console.error('Error saving snippets:', error);
+    } catch {
+
       return false;
     }
   });
@@ -76,8 +90,8 @@ function setupIpcHandlers() {
       }
       const data = fs.readFileSync(TAGS_FILE, 'utf8');
       return JSON.parse(data);
-    } catch (error) {
-      console.error('Error loading tags:', error);
+    } catch {
+     
       return [];
     }
   });
@@ -87,25 +101,13 @@ function setupIpcHandlers() {
     try {
       fs.writeFileSync(TAGS_FILE, JSON.stringify(tags, null, 2));
       return true;
-    } catch (error) {
-      console.error('Error saving tags:', error);
+    } catch {
+      
       return false;
     }
   });
 
-  // Ajoutez à vos gestionnaires IPC
-ipcMain.handle('extract-pdf-text', async (_, arrayBuffer) => {
-  try {
-    const pdfParse = require('pdf-parse');
-    const data = await pdfParse(Buffer.from(arrayBuffer));
-    return data.text;
-  } catch (error) {
-    console.error('Error extracting PDF text:', error);
-    return null;
-  }
-});
-
-
+  
 }
 
 // Initialiser l'application

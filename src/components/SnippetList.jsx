@@ -34,8 +34,8 @@ const SnippetList = ({ selectedTag, onEditSnippet, onViewSnippet, onDeleteSnippe
     };
 
     return (
-        <div className={`w-80 h-screen border-r overflow-y-auto ${state.theme === 'dark' ? 'bg-gray-800 text-white border-gray-700' : 'bg-gray-50 text-gray-800 border-gray-200'}`}>
-            <div className="p-4">
+        <div className={`w-80 h-screen flex flex-col ${state.theme === 'dark' ? 'bg-gray-800 text-white border-r border-gray-700' : 'bg-gray-50 text-gray-800 border-r border-gray-200'}`}>
+            <div className="sticky top-0 z-10 bg-inherit p-4 pb-0">
                 <div className={`flex items-center mb-4 px-3 py-2 rounded-md ${state.theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow-sm`}>
                     <input
                         type="text"
@@ -49,8 +49,10 @@ const SnippetList = ({ selectedTag, onEditSnippet, onViewSnippet, onDeleteSnippe
                 <h2 className="font-semibold mb-2 px-1">
                     {selectedTag ? `${selectedTag} Snippets` : 'All Snippets'} ({sortedSnippets.length})
                 </h2>
+            </div>
 
-                <div className="space-y-2">
+            <div className="overflow-y-auto flex-1">
+                <div className="space-y-2 p-4 pt-0">
                     {sortedSnippets.length === 0 ? (
                         <p className={`text-center py-4 ${state.theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
                             No snippets found

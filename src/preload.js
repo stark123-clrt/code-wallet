@@ -7,6 +7,9 @@ contextBridge.exposeInMainWorld('api', {
   loadTags: () => ipcRenderer.invoke('load-tags'),
   saveTags: (tags) => ipcRenderer.invoke('save-tags', tags),
   
-  // API pour extraire le texte d'un PDF
-  extractPdfText: (arrayBuffer) => ipcRenderer.invoke('extract-pdf-text', arrayBuffer)
+
+  extractPdfText: (arrayBuffer) => {
+    return ipcRenderer.invoke('extract-pdf-text', arrayBuffer);
+  }
+
 });
