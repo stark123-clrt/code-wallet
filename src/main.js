@@ -13,7 +13,7 @@ if (require('electron-squirrel-startup')) {
 const USER_DATA_PATH = app.getPath('userData');
 const SNIPPETS_FILE = path.join(USER_DATA_PATH, 'snippets.json');
 const TAGS_FILE = path.join(USER_DATA_PATH, 'tags.json');
-const pdfParse = require('pdf-parse');
+
 
 
 // Créer la fenêtre principale

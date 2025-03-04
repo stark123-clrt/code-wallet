@@ -1,6 +1,7 @@
 // src/components/DropZone.jsx
 import React, { useState } from 'react';
 
+
 const DropZone = ({ onPdfContent }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
