@@ -40,20 +40,6 @@ const createWindow = () => {
 
 // Configurer les gestionnaires IPC
 function setupIpcHandlers() {
-
-
-  ipcMain.handle('extract-pdf-text', async (_, arrayBuffer) => {
-    
-    try {
-      const pdfParse = require('pdf-parse');
-      const data = await pdfParse(Buffer.from(arrayBuffer));
-     
-      return data.text;
-    } catch {
-      
-      return null;
-    }
-  });
   
   // Charger les snippets
   ipcMain.handle('load-snippets', () => {

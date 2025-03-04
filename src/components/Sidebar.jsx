@@ -8,16 +8,15 @@ const Sidebar = ({ onNewSnippet, onSelectTag, selectedTag }) => {
   const [newTagName, setNewTagName] = useState('');
   const [newTagColor, setNewTagColor] = useState('#61dafb');
   const [showTagForm, setShowTagForm] = useState(false);
-  const [pdfContent, setPdfContent] = useState(null);
+
 
   const handlePdfContent = (contentData) => {
-    setPdfContent(contentData);
     onNewSnippet({
       code: contentData.content,
-      title: `PDF Import - ${contentData.fileName}`,
-      description: `Imported from ${contentData.fileName}`,
-      tags: [], // Ajouter un tableau vide pour éviter l'erreur
-      language: 'text'
+      title: `${contentData.fileName}`,
+      description: `Description ${contentData.fileName}`,
+      tags: [], 
+      language: contentData.language || 'text'
     });
   };
 

@@ -1,12 +1,33 @@
-// src/components/DropZone.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 const DropZone = ({ onPdfContent }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [lastDroppedFile, setLastDroppedFile] = useState(null);
-  const [apiRetryCount, setApiRetryCount] = useState(0);
-  const MAX_RETRIES = 3;
+
+  // Liste des extensions de fichiers de programmation à supporter
+  const SUPPORTED_FILE_EXTENSIONS = [
+    '.txt',  // Fichiers texte
+    '.js',   // JavaScript
+    '.jsx',  // React JavaScript
+    '.ts',   // TypeScript
+    '.tsx',  // React TypeScript
+    '.py',   // Python
+    '.json', // JSON
+    '.html', // HTML
+    '.css',  // CSS
+    '.scss', // SCSS
+    '.md',   // Markdown
+    '.yml',  // YAML
+    '.yaml', // YAML
+    '.xml',  // XML
+    '.sh',   // Shell script
+    '.rb',   // Ruby
+    '.php',  // PHP
+    '.java', // Java
+    '.cs',   // C#
+    '.c',    // C
+    '.cpp',  // C++
+  ];
 
   // Gestion du survol de la zone de dépôt
   const handleDragOver = (e) => {
@@ -20,60 +41,14 @@ const DropZone = ({ onPdfContent }) => {
     setIsDragging(false);
   };
 
-  // Fonction utilitaire pour lire un fichier comme ArrayBuffer
-  const readFileAsArrayBuffer = (file) => {
+  // Fonction pour lire le contenu du fichier
+  const readFileAsText = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = (event) => resolve(event.target.result);
       reader.onerror = (error) => reject(error);
-      reader.readAsArrayBuffer(file);
+      reader.readAsText(file);
     });
-  };
-
-  // Fonction de traitement du PDF avec mécanisme de retry
-  const processDroppedFile = async (file) => {
-    try {
-      setIsLoading(true);
-      
-      // Lecture du fichier comme ArrayBuffer
-      const arrayBuffer = await readFileAsArrayBuffer(file);
-      
-      // Extraction du texte PDF via l'API Electron
-      const pdfText = await window.api.extractPdfText(arrayBuffer);
-      
-      // Réinitialisation des compteurs si succès
-      setApiRetryCount(0);
-      
-      // Appel du callback avec les informations du PDF
-      if (pdfText && onPdfContent) {
-        onPdfContent({
-          fileName: file.name,
-          fileSize: file.size,
-          content: pdfText || `[Le contenu de ${file.name} n'a pas pu être extrait]`
-        });
-      } else {
-        throw new Error('Impossible de traiter le PDF');
-      }
-
-    } catch (error) {
-     
-      
-      // Gestion des tentatives de retry
-      if (apiRetryCount < MAX_RETRIES) {
-        setApiRetryCount(prev => prev + 1);
-        
-        // Petit délai avant de réessayer
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Réessayer le traitement
-        await processDroppedFile(file);
-      } else {
-        alert('Impossible de traiter le PDF après plusieurs tentatives.');
-        setApiRetryCount(0);
-      }
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   // Gestion du dépôt de fichier
@@ -86,28 +61,67 @@ const DropZone = ({ onPdfContent }) => {
     if (files.length > 0) {
       const file = files[0];
       
-      if (file.name.toLowerCase().endsWith('.pdf')) {
-        // Stocker le fichier déposé
-        setLastDroppedFile(file);
-        
-        // Lancer le traitement
-        await processDroppedFile(file);
+      // Vérifier si c'est un fichier supporté
+      const isSupportedFile = SUPPORTED_FILE_EXTENSIONS.some(ext => 
+        file.name.toLowerCase().endsWith(ext)
+      );
+
+      if (isSupportedFile) {
+        try {
+          setIsLoading(true);
+          
+          // Lire le contenu du fichier
+          const fileText = await readFileAsText(file);
+          
+          // Détecter le langage en fonction de l'extension
+          const getLanguage = (fileName) => {
+            const ext = fileName.split('.').pop().toLowerCase();
+            const languageMap = {
+              'js': 'javascript',
+              'jsx': 'jsx',
+              'ts': 'typescript',
+              'tsx': 'tsx',
+              'py': 'python',
+              'json': 'json',
+              'html': 'html',
+              'css': 'css',
+              'scss': 'scss',
+              'md': 'markdown',
+              'yml': 'yaml',
+              'yaml': 'yaml',
+              'xml': 'xml',
+              'sh': 'bash',
+              'rb': 'ruby',
+              'php': 'php',
+              'java': 'java',
+              'cs': 'csharp',
+              'c': 'c',
+              'cpp': 'cpp'
+            };
+            return languageMap[ext] || 'text';
+          };
+
+          // Appeler le callback avec les informations du fichier
+          if (onPdfContent) {
+            onPdfContent({
+              fileName: file.name,
+              fileSize: file.size,
+              content: fileText,
+              language: getLanguage(file.name)
+            });
+          }
+
+        } catch (error) {
+          console.error('Erreur lors du traitement du fichier:', error);
+          alert('Erreur lors du traitement du fichier. Veuillez réessayer.');
+        } finally {
+          setIsLoading(false);
+        }
       } else {
-        alert('Veuillez déposer un fichier PDF.');
+        alert('Veuillez déposer un fichier texte ou de programmation valide.');
       }
     }
   };
-
-  // Tentative de retraitement automatique si échec initial
-  useEffect(() => {
-    const retryProcessing = async () => {
-      if (lastDroppedFile && apiRetryCount > 0) {
-        await processDroppedFile(lastDroppedFile);
-      }
-    };
-
-    retryProcessing();
-  }, [apiRetryCount, lastDroppedFile]);
 
   return (
     <div 
@@ -124,12 +138,7 @@ const DropZone = ({ onPdfContent }) => {
         {isLoading ? (
           <div className="flex flex-col items-center">
             <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-2"></div>
-            <p className="text-gray-500">
-              {apiRetryCount > 0 
-                ? `Tentative ${apiRetryCount} de traitement...` 
-                : 'Extraction du contenu...'
-              }
-            </p>
+            <p className="text-gray-500">Extraction du contenu...</p>
           </div>
         ) : (
           <>
@@ -149,8 +158,8 @@ const DropZone = ({ onPdfContent }) => {
             </svg>
             <p className={`mb-2 ${isDragging ? 'text-blue-500' : 'text-gray-500'}`}>
               {isDragging 
-                ? 'Déposez le fichier PDF ici' 
-                : 'Glissez et déposez un fichier PDF ici'}
+                ? 'Déposez votre fichier ici' 
+                : 'Glissez et déposez un fichier texte ou de programmation'}
             </p>
           </>
         )}

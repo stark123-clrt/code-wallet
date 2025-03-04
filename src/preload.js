@@ -7,9 +7,4 @@ contextBridge.exposeInMainWorld('api', {
   loadTags: () => ipcRenderer.invoke('load-tags'),
   saveTags: (tags) => ipcRenderer.invoke('save-tags', tags),
   
-
-  extractPdfText: (arrayBuffer) => {
-    return ipcRenderer.invoke('extract-pdf-text', arrayBuffer);
-  }
-
 });

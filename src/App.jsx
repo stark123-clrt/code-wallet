@@ -8,7 +8,7 @@ import SnippetForm from './components/SnippetForm';
 
 
 const AppContent = () => {
-  const { state } = useAppContext();
+  const { state, deleteSnippet } = useAppContext(); 
   const [selectedTag, setSelectedTag] = useState(null);
   const [selectedSnippet, setSelectedSnippet] = useState(null);
   const [showSnippetForm, setShowSnippetForm] = useState(false);
@@ -21,7 +21,7 @@ const AppContent = () => {
         code: prefilledValues.code || '',
         description: prefilledValues.description || '',
         language: prefilledValues.language || 'text',
-        tags: prefilledValues.tags || [] // Assurez-vous que tags est toujours un tableau
+        tags: prefilledValues.tags || [] 
       });
     } else {
       setEditingSnippet(undefined);
