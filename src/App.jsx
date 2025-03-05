@@ -5,6 +5,7 @@ import SnippetList from './components/SnippetList';
 import SnippetDetail from './components/SnippetDetail';
 import SnippetForm from './components/SnippetForm';
 import InfoPage from './components/InfoPage';
+import SplashScreen from './components/SplashScreen';
 
 const AppContent = () => {
   const { state, deleteSnippet } = useAppContext(); 
@@ -13,6 +14,7 @@ const AppContent = () => {
   const [showSnippetForm, setShowSnippetForm] = useState(false);
   const [editingSnippet, setEditingSnippet] = useState(undefined);
   const [showInfoPage, setShowInfoPage] = useState(false);
+  const [splashFinished, setSplashFinished] = useState(false);
 
   const handleNewSnippet = (prefilledValues = undefined) => {
     if (prefilledValues) {
@@ -72,6 +74,14 @@ const AppContent = () => {
   const handleGoBack = () => {
     setShowInfoPage(false);
   };
+  
+  const handleSplashFinish = () => {
+    setSplashFinished(true);
+  };
+
+  if (!splashFinished) {
+    return <SplashScreen onFinish={handleSplashFinish} />;
+  }
 
   return (
     <div className={`flex h-screen overflow-hidden ${state.theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-gray-800'}`}>

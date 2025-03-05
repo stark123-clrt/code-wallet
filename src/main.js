@@ -2,15 +2,52 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
-// Éviter les problèmes de démarrage sur Windows
+// Évite les problèmes de démarrage sur Windows
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
+// Déterminer si nous sommes en développement ou en production
+const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
+
+// Détecter automatiquement la racine du projet
+let STORAGE_PATH;
+
+if (isDev) {
+  // En développement, utiliser le répertoire de travail actuel
+  STORAGE_PATH = process.cwd(); // Obtient le répertoire de travail actuel
+  console.log('Chemin de stockage (dev):', STORAGE_PATH);
+} else {
+  // En production, utiliser un dossier dans les données utilisateur
+  STORAGE_PATH = path.join(app.getPath('userData'), 'data');
+  
+  // S'assurer que le dossier existe
+  if (!fs.existsSync(STORAGE_PATH)) {
+    fs.mkdirSync(STORAGE_PATH, { recursive: true });
+  }
+  console.log('Chemin de stockage (prod):', STORAGE_PATH);
+}
+
 // Chemins de fichiers pour le stockage
-const USER_DATA_PATH = app.getPath('userData');
-const SNIPPETS_FILE = path.join(USER_DATA_PATH, 'snippets.json');
-const TAGS_FILE = path.join(USER_DATA_PATH, 'tags.json');
+const SNIPPETS_FILE = path.join(STORAGE_PATH, 'snippets.json');
+const TAGS_FILE = path.join(STORAGE_PATH, 'tags.json');
+
+console.log('Fichier snippets sera à:', SNIPPETS_FILE);
+console.log('Fichier tags sera à:', TAGS_FILE);
+
+// Vérifier/créer les fichiers lors du démarrage
+try {
+  if (!fs.existsSync(SNIPPETS_FILE)) {
+    fs.writeFileSync(SNIPPETS_FILE, JSON.stringify([]));
+    console.log('Fichier snippets.json créé avec succès');
+  }
+  if (!fs.existsSync(TAGS_FILE)) {
+    fs.writeFileSync(TAGS_FILE, JSON.stringify([]));
+    console.log('Fichier tags.json créé avec succès');
+  }
+} catch (error) {
+  console.error('Erreur lors de la création des fichiers JSON:', error);
+}
 
 // Variable globale pour la fenêtre principale
 let mainWindow = null;
@@ -29,18 +66,16 @@ const createWindow = () => {
     autoHideMenuBar: true,
   });
 
-
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
 
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
-  // Ouvrir les DevTools en mode développement
-  // mainWindow.webContents.openDevTools();
 };
 
 // Configurer les gestionnaires IPC
+
 function setupIpcHandlers() {
   // Charger les snippets
   ipcMain.handle('load-snippets', () => {
@@ -93,6 +128,11 @@ function setupIpcHandlers() {
       return false;
     }
   });
+  
+  // Ajouter un handler pour obtenir le chemin de stockage
+  ipcMain.handle('get-storage-path', () => {
+    return STORAGE_PATH;
+  });
 }
 
 // Initialiser l'application
@@ -118,7 +158,6 @@ app.on('window-all-closed', () => {
     }
     mainWindow = null;
   }
-
 
   if (process.platform !== 'darwin') {
     app.quit();
