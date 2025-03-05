@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 import DropZone from './DropZone'; 
-import { Plus, Moon, Sun, Trash2, X } from 'lucide-react';
+import { Plus, Moon, Sun, Trash2, X, HelpCircle } from 'lucide-react';
 
-const Sidebar = ({ onNewSnippet, onSelectTag, selectedTag }) => {
+const Sidebar = ({ 
+  onNewSnippet, 
+  onSelectTag, 
+  selectedTag, 
+  onShowInfo 
+}) => {
   const { state, toggleTheme, addTag, deleteTag } = useAppContext();
   const [newTagName, setNewTagName] = useState('');
   const [newTagColor, setNewTagColor] = useState('#61dafb');
   const [showTagForm, setShowTagForm] = useState(false);
-
 
   const handlePdfContent = (contentData) => {
     onNewSnippet({
@@ -33,12 +37,20 @@ const Sidebar = ({ onNewSnippet, onSelectTag, selectedTag }) => {
     <div className={`w-64 h-screen p-4 border-r flex flex-col ${state.theme === 'dark' ? 'bg-gray-900 text-white border-gray-700' : 'bg-white text-gray-800 border-gray-200'}`}>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-xl font-bold">Code Wallet</h1>
-        <button
-          onClick={toggleTheme}
-          className={`p-2 rounded-full ${state.theme === 'dark' ? 'hover:bg-gray-800' : 'hover:bg-gray-100'}`}
-        >
-          {state.theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-        </button>
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={onShowInfo}
+            className={`p-2 rounded-full ${state.theme === 'dark' ? 'hover:bg-gray-800' : 'hover:bg-gray-100'}`}
+          >
+            <HelpCircle size={20} />
+          </button>
+          <button
+            onClick={toggleTheme}
+            className={`p-2 rounded-full ${state.theme === 'dark' ? 'hover:bg-gray-800' : 'hover:bg-gray-100'}`}
+          >
+            {state.theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
+        </div>
       </div>
 
       <button

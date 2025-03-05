@@ -106,7 +106,7 @@ const SnippetList = ({ selectedTag, onEditSnippet, onViewSnippet, onDeleteSnippe
                                                         key={tagName}
                                                         className="text-xs px-2 py-0.5 rounded-full"
                                                         style={{
-                                                            backgroundColor: tag?.color + '33', // Add transparency
+                                                            backgroundColor: tag?.color + '33', 
                                                             color: tag?.color
                                                         }}
                                                     >

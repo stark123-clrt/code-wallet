@@ -37,9 +37,10 @@ const SnippetForm = ({ snippet, onClose, onSave }) => {
             alert('Title and code are required!');
             return;
         }
+        
+        //Mise a jours d'un snippet
 
         if (snippet && snippet.id) {
-            // Mettre à jour un snippet existant (a un ID)
             updateSnippet({
                 ...snippet,
                 title,
@@ -49,7 +50,7 @@ const SnippetForm = ({ snippet, onClose, onSave }) => {
                 tags: selectedTags,
             });
         } else {
-            // Ajouter un nouveau snippet (pas d'ID ou snippet vide)
+            // Ajout un nouveau snippet 
             addSnippet({
                 title,
                 code,

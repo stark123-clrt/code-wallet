@@ -159,7 +159,7 @@ const DropZone = ({ onPdfContent }) => {
             <p className={`mb-2 ${isDragging ? 'text-blue-500' : 'text-gray-500'}`}>
               {isDragging 
                 ? 'Déposez votre fichier ici' 
-                : 'Glissez et déposez un fichier texte ou de programmation'}
+                : 'Glissez un fichier code ici'}
             </p>
           </>
         )}

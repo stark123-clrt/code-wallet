@@ -9,7 +9,7 @@ const initialState = {
   snippets: [],
   tags: [],
   theme: 'dark',
-  selectedSnippetId: null // Ajoutez cette ligne
+  selectedSnippetId: null 
 };
 
 // Réducteur pour gérer les états
@@ -112,11 +112,9 @@ export const AppProvider = ({ children }) => {
     dispatch({ type: 'TOGGLE_THEME' });
   };
   
-  // À implémenter: chargement/sauvegarde des données avec electron
-  // Quand vous serez prêt à ajouter la persistance
- // Dans AppContext.jsx, modifiez la partie useEffect
+
 useEffect(() => {
-    // Charger les données réelles au lieu de la démo
+
     const loadData = async () => {
       try {
         // Utiliser les API Electron pour charger les données
@@ -127,16 +125,14 @@ useEffect(() => {
         dispatch({ type: 'SET_TAGS', payload: tags });
       } catch (error) {
         console.error('Erreur lors du chargement des données:', error);
-        // Charger les données de démo en cas d'erreur
-        dispatch({ type: 'SET_SNIPPETS', payload: demoSnippets });
-        dispatch({ type: 'SET_TAGS', payload: demoTags });
       }
     };
     
     loadData();
   }, []);
   
-  // Ajouter un effet pour sauvegarder les données quand elles changent
+  // effet pour sauvegarder les données quand elles changent
+  
   useEffect(() => {
     if (state.snippets.length > 0) {
       window.api.saveSnippets(state.snippets).catch(err => 

@@ -1,8 +1,6 @@
-// src/main.js
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
-
 
 // Éviter les problèmes de démarrage sur Windows
 if (require('electron-squirrel-startup')) {
@@ -14,12 +12,13 @@ const USER_DATA_PATH = app.getPath('userData');
 const SNIPPETS_FILE = path.join(USER_DATA_PATH, 'snippets.json');
 const TAGS_FILE = path.join(USER_DATA_PATH, 'tags.json');
 
-
+// Variable globale pour la fenêtre principale
+let mainWindow = null;
 
 // Créer la fenêtre principale
 const createWindow = () => {
   // Créer la fenêtre principale
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     webPreferences: {
@@ -30,17 +29,19 @@ const createWindow = () => {
     autoHideMenuBar: true,
   });
 
-  // Charger l'URL ou le fichier HTML
+
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
 
-}
-
-
+  mainWindow.on('closed', () => {
+    mainWindow = null;
+  });
+  // Ouvrir les DevTools en mode développement
+  // mainWindow.webContents.openDevTools();
+};
 
 // Configurer les gestionnaires IPC
 function setupIpcHandlers() {
-  
   // Charger les snippets
   ipcMain.handle('load-snippets', () => {
     try {
@@ -50,8 +51,8 @@ function setupIpcHandlers() {
       }
       const data = fs.readFileSync(SNIPPETS_FILE, 'utf8');
       return JSON.parse(data);
-    } catch {
-     
+    } catch (error) {
+      console.error('Error loading snippets:', error);
       return [];
     }
   });
@@ -61,8 +62,8 @@ function setupIpcHandlers() {
     try {
       fs.writeFileSync(SNIPPETS_FILE, JSON.stringify(snippets, null, 2));
       return true;
-    } catch {
-
+    } catch (error) {
+      console.error('Error saving snippets:', error);
       return false;
     }
   });
@@ -76,8 +77,8 @@ function setupIpcHandlers() {
       }
       const data = fs.readFileSync(TAGS_FILE, 'utf8');
       return JSON.parse(data);
-    } catch {
-     
+    } catch (error) {
+      console.error('Error loading tags:', error);
       return [];
     }
   });
@@ -87,13 +88,11 @@ function setupIpcHandlers() {
     try {
       fs.writeFileSync(TAGS_FILE, JSON.stringify(tags, null, 2));
       return true;
-    } catch {
-      
+    } catch (error) {
+      console.error('Error saving tags:', error);
       return false;
     }
   });
-
-  
 }
 
 // Initialiser l'application
@@ -108,8 +107,39 @@ app.whenReady().then(() => {
   });
 });
 
+// Gestion de la fermeture de l'application
 app.on('window-all-closed', () => {
+  // Nettoyer correctement la fenêtre
+  if (mainWindow) {
+    if (!mainWindow.isDestroyed()) {
+      mainWindow.webContents.closeDevTools();
+      mainWindow.removeAllListeners();
+      mainWindow.close();
+    }
+    mainWindow = null;
+  }
+
+
   if (process.platform !== 'darwin') {
     app.quit();
   }
+});
+
+// Gestion des événements avant la fermeture
+app.on('before-quit', () => {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.removeAllListeners();
+    mainWindow.destroy();
+  }
+});
+
+// Gestion des erreurs non capturées
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  
+  // Fermeture propre de l'application en cas d'erreur
+  if (mainWindow) {
+    mainWindow.close();
+  }
+  app.quit();
 });
