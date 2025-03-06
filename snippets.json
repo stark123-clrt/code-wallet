@@ -34,5 +34,17 @@
     ],
     "createdAt": "2025-03-05T18:01:47.413Z",
     "updatedAt": "2025-03-05T18:01:47.413Z"
+  },
+  {
+    "id": "db972cc7-b9a6-46c1-ad83-7fbb53bc1e45",
+    "title": "tailwind.config.js",
+    "code": "/** @type {import('tailwindcss').Config} */\nmodule.exports = {\n  content: [\"./src/**/*.{html,js,jsx}\"],\n  theme: {\n    extend: {},\n  },\n  plugins: [\n    require(\"@tailwindcss/typography\"),\n    require(\"@tailwindcss/forms\"),\n    require(\"@tailwindcss/aspect-ratio\")\n  ],\n};\n",
+    "language": "javascript",
+    "description": "Description tailwind.config.js",
+    "tags": [
+      "Js"
+    ],
+    "createdAt": "2025-03-05T20:37:03.930Z",
+    "updatedAt": "2025-03-05T20:37:03.931Z"
   }
 ]
