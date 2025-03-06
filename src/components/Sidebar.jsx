@@ -33,6 +33,21 @@ const Sidebar = ({
     }
   };
 
+  // Fonction spécifique pour gérer le changement de nom de tag
+  const handleTagNameChange = (e) => {
+    setNewTagName(e.target.value);
+  };
+
+  // Reset form when opening it
+  const toggleTagForm = () => {
+    if (!showTagForm) {
+      // Reset values when opening
+      setNewTagName('');
+      setNewTagColor('#61dafb');
+    }
+    setShowTagForm(!showTagForm);
+  };
+
   return (
     <div className={`w-64 h-screen p-4 border-r flex flex-col ${state.theme === 'dark' ? 'bg-gray-900 text-white border-gray-700' : 'bg-white text-gray-800 border-gray-200'}`}>
       <div className="flex items-center justify-between mb-6">
@@ -66,7 +81,7 @@ const Sidebar = ({
         <div className="flex items-center justify-between mb-2">
           <h2 className="font-semibold">Tags</h2>
           <button
-            onClick={() => setShowTagForm(!showTagForm)}
+            onClick={toggleTagForm}
             className={`p-1 rounded-full ${state.theme === 'dark' ? 'hover:bg-gray-800' : 'hover:bg-gray-100'}`}
           >
             <Plus size={20} />
@@ -79,9 +94,10 @@ const Sidebar = ({
               <input
                 type="text"
                 value={newTagName}
-                onChange={(e) => setNewTagName(e.target.value)}
+                onChange={handleTagNameChange}
                 placeholder="Tag name"
-                className={`flex-1 p-1 text-sm rounded-l-md ${state.theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'} border`}
+                autoFocus
+                className={`flex-1 p-1 text-sm rounded-l-md ${state.theme === 'dark' ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-800'} border outline-none`}
               />
               <input
                 type="color"

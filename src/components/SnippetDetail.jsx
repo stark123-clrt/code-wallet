@@ -1,7 +1,29 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { Eye, Copy, X } from 'lucide-react';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/atom-one-dark.css';
+import 'highlight.js/styles/atom-one-light.css';
 
+const highlightCode = (code, language) => {
+  if (!code) return '';
+  
+  try {
+    if (language) {
+      return hljs.highlight(code, { language }).value;
+    }
+    // Otherwise, use auto-detection
+    return hljs.highlightAuto(code).value;
+  } catch (error) {
+    console.error('Syntax highlighting error:', error);
+    return code;
+  }
+};
+
+// Get appropriate CSS class for dark/light mode
+const getHighlightThemeClass = (isDarkMode) => {
+  return isDarkMode ? 'atom-one-dark' : 'atom-one-light';
+};
 
 const SnippetDetail = ({ snippet }) => {
   const { state } = useAppContext();
@@ -10,24 +32,40 @@ const SnippetDetail = ({ snippet }) => {
   const [showCodeViewer, setShowCodeViewer] = useState(false);
 
   useEffect(() => {
-    if (snippet && codeRef.current) {
-      codeRef.current.textContent = snippet.code;
-      // Appliquer la coloration syntaxique si disponible
-      if (window.hljs) {
-        window.hljs.highlightElement(codeRef.current);
-      }
-    }
-  }, [snippet]);
+    hljs.configure({
+      languages: [
+        'javascript', 
+        'typescript', 
+        'python', 
+        'ruby', 
+        'java', 
+        'html', 
+        'css', 
+        'php',
+        'c',
+        'cpp',
+        'csharp',
+        'go',
+        'shell'
+      ]
+    });
+  }, []);
 
+  // Exécuter à chaque fois que le snippet ou ses propriétés changent
   useEffect(() => {
-    // Mettre à jour la coloration syntaxique dans la vue complète quand elle s'ouvre
-    if (showCodeViewer && fullCodeRef.current && snippet) {
-      fullCodeRef.current.textContent = snippet.code;
-      if (window.hljs) {
-        window.hljs.highlightElement(fullCodeRef.current);
-      }
+    if (snippet && codeRef.current) {
+      const highlightedCode = highlightCode(snippet.code, snippet.language);
+      codeRef.current.innerHTML = highlightedCode;
     }
-  }, [showCodeViewer, snippet]);
+  }, [snippet, snippet?.code, snippet?.language]); // Ajout des dépendances pour réagir aux changements
+
+  // Update syntax highlighting in full view when opened
+  useEffect(() => {
+    if (showCodeViewer && fullCodeRef.current && snippet) {
+      const highlightedCode = highlightCode(snippet.code, snippet.language);
+      fullCodeRef.current.innerHTML = highlightedCode;
+    }
+  }, [showCodeViewer, snippet, snippet?.code, snippet?.language]); // Ajout des dépendances
 
   const copyToClipboard = () => {
     if (snippet) {
@@ -36,13 +74,8 @@ const SnippetDetail = ({ snippet }) => {
     }
   };
 
-  // Version spécifique pour la vue complète
-  const copyFromFullView = () => {
-    if (snippet) {
-      navigator.clipboard.writeText(snippet.code);
-      alert('Code copied to clipboard!');
-    }
-  };
+  // Gérer le cas où snippet est null
+  if (!snippet) return null;
 
   return (
     <div className={`flex-1 h-screen overflow-y-auto ${state.theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-800'}`}>
@@ -75,7 +108,6 @@ const SnippetDetail = ({ snippet }) => {
           <div className={`flex items-center justify-between px-4 py-2 ${state.theme === 'dark' ? 'bg-gray-700' : 'bg-gray-100'}`}>
             <span className="text-sm font-medium">{snippet.language}</span>
             <div className="flex space-x-2">
-            
               <button 
                 onClick={() => setShowCodeViewer(true)}
                 className={`flex items-center justify-center p-1.5 rounded-full ${state.theme === 'dark' ? 'hover:bg-gray-600' : 'hover:bg-gray-200'}`}
@@ -92,7 +124,7 @@ const SnippetDetail = ({ snippet }) => {
               </button>
             </div>
           </div>
-          <pre className="p-4 overflow-y-auto max-h-80">
+          <pre className={`p-4 overflow-y-auto max-h-80 ${getHighlightThemeClass(state.theme === 'dark')}`}>
             <code ref={codeRef} className={`language-${snippet.language}`}>
               {snippet.code}
             </code>
@@ -105,19 +137,16 @@ const SnippetDetail = ({ snippet }) => {
         </div>
       </div>
 
-     
       {showCodeViewer && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className={`w-[95%] h-[95vh] overflow-hidden rounded-lg shadow-xl ${state.theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'}`}>
-         
             <div className="flex justify-between items-center p-3 border-b border-gray-700">
               <h2 className="text-lg font-semibold">
                 Code
               </h2>
               <div className="flex gap-2">
-              
                 <button 
-                  onClick={copyFromFullView}
+                  onClick={copyToClipboard}
                   className={`flex items-center justify-center p-1.5 rounded-full ${state.theme === 'dark' ? 'hover:bg-gray-600' : 'hover:bg-gray-200'}`}
                   title="Copier le code"
                 >
@@ -133,9 +162,8 @@ const SnippetDetail = ({ snippet }) => {
               </div>
             </div>
             
-        
             <div className="h-[calc(95vh-50px)] overflow-auto p-4">
-              <pre className="h-full">
+              <pre className={`h-full ${getHighlightThemeClass(state.theme === 'dark')}`}>
                 <code ref={fullCodeRef} className={`language-${snippet.language}`}>
                   {snippet.code}
                 </code>

@@ -218,7 +218,7 @@ const SnippetForm = ({ snippet, onClose, onSave }) => {
                                                 onClick={() => handleSelectExistingTag(tag.name)}
                                                 className="px-2 py-0.5 text-xs rounded-full"
                                                 style={{
-                                                    backgroundColor: tag?.color + '33', // Add transparency
+                                                    backgroundColor: tag?.color + '33',
                                                     color: tag?.color
                                                 }}
                                             >

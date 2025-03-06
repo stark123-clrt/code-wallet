@@ -8,5 +8,40 @@
     "id": "79981dd2-3e42-4d9b-9ad8-d65861ef27db",
     "name": "python",
     "color": "#0ea427"
+  },
+  {
+    "id": "25e5b14c-7631-4a7e-8213-8887cd483d78",
+    "name": "typescrip",
+    "color": "#e7eb14"
+  },
+  {
+    "id": "0006cd3a-5857-4091-94c0-790ac03e5b43",
+    "name": "html",
+    "color": "#f4930b"
+  },
+  {
+    "id": "d3675180-ca43-46ef-a326-d617a7db6a07",
+    "name": "css",
+    "color": "#cb23e1"
+  },
+  {
+    "id": "9e8e18cd-daaf-4eb6-bce4-8ad45766f286",
+    "name": "java",
+    "color": "#e1d123"
+  },
+  {
+    "id": "4b090e93-8a76-4941-b56a-370707ac9dde",
+    "name": "cpp",
+    "color": "#e1d123"
+  },
+  {
+    "id": "664b3072-0dac-4eb1-adb7-49e58af341f6",
+    "name": "c",
+    "color": "#c07b1b"
+  },
+  {
+    "id": "edb2c7b7-4138-4ef7-b6db-1e997d405686",
+    "name": "jsx",
+    "color": "#0895c4"
   }
 ]

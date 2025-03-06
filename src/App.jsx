@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppProvider, useAppContext } from './context/AppContext';
 import Sidebar from './components/Sidebar';
 import SnippetList from './components/SnippetList';
@@ -10,11 +10,16 @@ import SplashScreen from './components/SplashScreen';
 const AppContent = () => {
   const { state, deleteSnippet } = useAppContext(); 
   const [selectedTag, setSelectedTag] = useState(null);
-  const [selectedSnippet, setSelectedSnippet] = useState(null);
+  const [selectedSnippetId, setSelectedSnippetId] = useState(null);
   const [showSnippetForm, setShowSnippetForm] = useState(false);
   const [editingSnippet, setEditingSnippet] = useState(undefined);
   const [showInfoPage, setShowInfoPage] = useState(false);
   const [splashFinished, setSplashFinished] = useState(false);
+
+  // Récupérer le snippet sélectionné directement depuis le state pour avoir toujours la version à jour
+  const selectedSnippet = selectedSnippetId 
+    ? state.snippets.find(s => s.id === selectedSnippetId) 
+    : null;
 
   const handleNewSnippet = (prefilledValues = undefined) => {
     if (prefilledValues) {
@@ -45,25 +50,31 @@ const AppContent = () => {
 
   const handleSaveForm = () => {
     setShowSnippetForm(false);
+    
+    // Si nous étions en train d'éditer un snippet, assurons-nous qu'il reste sélectionné
+    if (editingSnippet && editingSnippet.id) {
+      setSelectedSnippetId(editingSnippet.id);
+    }
+    
     setEditingSnippet(undefined);
   };
 
   const handleSelectTag = (tag) => {
     setSelectedTag(tag);
-    setSelectedSnippet(null);
+    setSelectedSnippetId(null);
     setShowInfoPage(false);
   };
 
   const handleViewSnippet = (snippet) => {
-    setSelectedSnippet(snippet);
+    setSelectedSnippetId(snippet.id);
     setShowSnippetForm(false);
     setShowInfoPage(false);
   };
 
   const handleDeleteSnippet = (id) => {
     deleteSnippet(id);
-    if (selectedSnippet && selectedSnippet.id === id) {
-      setSelectedSnippet(null);
+    if (selectedSnippetId === id) {
+      setSelectedSnippetId(null);
     }
   };
 
@@ -103,7 +114,7 @@ const AppContent = () => {
             onEditSnippet={handleEditSnippet}
             onViewSnippet={handleViewSnippet}
             onDeleteSnippet={handleDeleteSnippet}
-            selectedSnippetId={selectedSnippet ? selectedSnippet.id : null}
+            selectedSnippetId={selectedSnippetId}
           />
           
           {selectedSnippet ? (
