@@ -25,9 +25,11 @@ const Sidebar = ({
   };
 
   const handleAddTag = (e) => {
+
     e.preventDefault();
     if (newTagName.trim()) {
       addTag(newTagName.trim(), newTagColor);
+      
       setNewTagName('');
       setShowTagForm(false);
     }

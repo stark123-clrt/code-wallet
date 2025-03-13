@@ -9,13 +9,12 @@ if (require('electron-squirrel-startup')) {
 
 // Déterminer si nous sommes en développement ou en production
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
-
 // Détecter automatiquement la racine du projet
 let STORAGE_PATH;
 
 if (isDev) {
   // En développement, utiliser le répertoire de travail actuel
-  STORAGE_PATH = process.cwd(); // Obtient le répertoire de travail actuel
+  STORAGE_PATH = process.cwd(); //répertoire de travail actuel
   console.log('Chemin de stockage (dev):', STORAGE_PATH);
 } else {
   // En production, utiliser un dossier dans les données utilisateur

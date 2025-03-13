@@ -51,13 +51,15 @@ const AppContent = () => {
   const handleSaveForm = () => {
     setShowSnippetForm(false);
     
-    // Si nous étions en train d'éditer un snippet, assurons-nous qu'il reste sélectionné
+
     if (editingSnippet && editingSnippet.id) {
       setSelectedSnippetId(editingSnippet.id);
     }
     
     setEditingSnippet(undefined);
   };
+
+  
 
   const handleSelectTag = (tag) => {
     setSelectedTag(tag);
@@ -94,6 +96,7 @@ const AppContent = () => {
     return <SplashScreen onFinish={handleSplashFinish} />;
   }
 
+  
   return (
     <div className={`flex h-screen overflow-hidden ${state.theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-gray-800'}`}>
       <Sidebar 

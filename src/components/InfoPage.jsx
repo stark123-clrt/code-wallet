@@ -9,22 +9,12 @@ const InfoPage = ({ onGoBack }) => {
     {
       icon: <Info size={24} />,
       title: 'About Code Wallet',
-      content: 'Code Wallet is a powerful snippet management application designed to help developers organize, store, and quickly access their code snippets.'
-    },
-    {
-      icon: <Book size={24} />,
-      title: 'How to Use',
-      content: 'Create new snippets, add tags for organization, and use the search and filter features to quickly find the code you need.'
+      content: 'Code Wallet is a desktop application designed to help developers organize, store, and quickly access their code snippets.'
     },
     {
       icon: <Settings size={24} />,
-      title: 'Features',
-      content: '- Create and manage code snippets\n- Add custom tags\n- Dark/Light theme toggle\n- PDF and file import\n- Responsive design'
-    },
-    {
-      icon: <HelpCircle size={24} />,
-      title: 'Support',
-      content: 'If you need help or have suggestions, please contact our support team.'
+      title: 'Key Features',
+      content: '• Organized code snippet storage with tags\n• Syntax highlighting\n• Dark/Light theme\n• File drag and drop import\n• Offline functionality'
     }
   ];
 
@@ -41,7 +31,7 @@ const InfoPage = ({ onGoBack }) => {
         >
           <X size={24} />
         </button>
-        <h1 className="text-3xl font-bold">Code Wallet Information</h1>
+        <h1 className="text-3xl font-bold">Code Wallet</h1>
       </div>
       
       <div className="space-y-6">
@@ -60,11 +50,17 @@ const InfoPage = ({ onGoBack }) => {
               </div>
               <h2 className="text-xl font-semibold">{section.title}</h2>
             </div>
-            <p className={`text-sm ${state.theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+            <p className={`text-sm whitespace-pre-line ${state.theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
               {section.content}
             </p>
           </div>
         ))}
+      </div>
+      
+      <div className={`mt-8 p-4 rounded text-center ${
+        state.theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+      }`}>
+        <p>Developed by Christian Ondiyo • 2025</p>
       </div>
     </div>
   );
